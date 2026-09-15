@@ -28,11 +28,16 @@ def make_driver():
     return driver
 
 
-def fetch_rendered_html(url, max_attempts=3):
+def fetch_rendered_html(url, max_attempts=3, wait_for_selector="h3.s-18"):
     """
     Tries up to max_attempts times to load a page and get its fully-rendered HTML.
     Returns the HTML string, or None if every attempt failed.
     This retry pattern is the core of resilient scraping.
+
+    wait_for_selector: CSS selector to wait for before considering the page
+    "ready". Defaults to the search-results page's job title element, but
+    pass a DIFFERENT selector (or None) when scraping a different page type,
+    like an individual job's detail page.
     """
     for attempt in range(1, max_attempts + 1):
         print(f"Attempt {attempt}/{max_attempts}: loading {url}")
@@ -44,9 +49,15 @@ def fetch_rendered_html(url, max_attempts=3):
             except TimeoutException:
                 print("  Page load timed out, but continuing (page may still be usable).")
 
-            WebDriverWait(driver, 25).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "h3.s-18"))
-            )
+            if wait_for_selector:
+                WebDriverWait(driver, 25).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, wait_for_selector))
+                )
+            else:
+                # No specific element to wait for -- just give the page a
+                # few seconds to run its JavaScript
+                time.sleep(4)
+
             html = driver.page_source
             driver.quit()
             print("  Success.")

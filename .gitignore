@@ -1,0 +1,14 @@
+# Never commit secrets
+.env
+
+# Data files are too large for GitHub anyway (some are multiple GB) -
+# we'll document how to get them in the README instead
+data/*.csv
+data/*.html
+data/*.png
+
+# Python stuff we don't need in version control
+__pycache__/
+*.pyc
+.venv/
+venv/

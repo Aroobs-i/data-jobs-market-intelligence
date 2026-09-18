@@ -34,7 +34,7 @@ else:
     db_password = os.getenv("DB_PASSWORD")
 
 engine = create_engine(
-    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
 )
 
 @st.cache_data

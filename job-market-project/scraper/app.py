@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import os
 
 st.set_page_config(
-    page_title="Pakistan Job Market Intelligence",
+    page_title="Data Analytics Job Market Intelligence",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -93,7 +93,7 @@ else:
     filtered_skills = skills_df
 
 # --- HEADER ---
-st.title("📊 Pakistan Job Market Intelligence")
+st.title("📊 Data Analytics Job Market Intelligence")
 st.caption("Live-updating analysis of data & analytics roles, benchmarked against the global market")
 
 # --- KPI CARDS (native Streamlit metrics -- clean, no custom HTML/CSS needed) ---

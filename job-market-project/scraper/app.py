@@ -61,10 +61,17 @@ skills_df = load_skills()
 
 @st.cache_data
 def load_pk_raw():
+    # Build the path relative to THIS script's location, not the current
+    # working directory -- the working directory can differ between local
+    # runs and Streamlit Cloud's deployment environment, which silently
+    # broke this before.
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(script_dir, "..", "data", "job_history.csv")
     try:
-        df = pd.read_csv("../data/job_history.csv")
+        df = pd.read_csv(csv_path)
         return df.drop_duplicates(subset="link", keep="first")
     except FileNotFoundError:
+        st.warning(f"job_history.csv not found at {csv_path} — search term/date charts will be empty.")
         return pd.DataFrame(columns=["search_term", "scraped_date"])
 
 pk_raw_df = load_pk_raw()

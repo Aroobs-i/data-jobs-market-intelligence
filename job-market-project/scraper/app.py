@@ -127,8 +127,13 @@ with tab1:
             st.subheader("Postings Collected Over Time")
             if "scraped_date" in pk_raw_df.columns:
                 daily_counts = pk_raw_df.groupby("scraped_date").size().reset_index(name="new_postings")
+                # Treat dates as discrete category labels, not a continuous
+                # timeline -- with only a few days of data, a continuous
+                # datetime axis produces nonsense sub-second tick marks
+                daily_counts["scraped_date"] = daily_counts["scraped_date"].astype(str)
                 fig = px.bar(daily_counts, x="scraped_date", y="new_postings",
                              color_discrete_sequence=["#4fc3f7"], template=PLOTLY_TEMPLATE)
+                fig.update_xaxes(type="category")
                 st.plotly_chart(fig, use_container_width=True)
                 st.caption("This grows automatically each day the scheduled scraper runs.")
             else:

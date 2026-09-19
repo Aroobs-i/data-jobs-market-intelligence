@@ -18,7 +18,7 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
 connection_string = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
-engine = create_engine(connection_string)
+engine = create_engine(connection_string, pool_pre_ping=True)
 
 print("Testing connection...")
 with engine.connect() as conn:
@@ -61,8 +61,9 @@ CREATE TABLE jobs (
     job_level TEXT,
     job_type TEXT,
     first_seen DATE,
-    link TEXT,
-    description TEXT
+    link TEXT UNIQUE,
+    description TEXT,
+    search_term TEXT               -- which Pakistan search found this (NULL for global)
 );
 
 CREATE TABLE job_skills (
@@ -99,6 +100,7 @@ pk_jobs = pd.DataFrame({
     "first_seen": pd.to_datetime(pk_df.get("scraped_date"), errors="coerce").dt.date,
     "link": pk_df["link"],
     "description": pk_df["best_description"],
+    "search_term": pk_df.get("search_term"),
 })
 
 # Standardize global data. job_location is like "New Haven, CT" -- we split
@@ -116,6 +118,7 @@ global_jobs = pd.DataFrame({
     "first_seen": pd.to_datetime(global_df["first_seen"], errors="coerce").dt.date,
     "link": global_df["job_link"],
     "description": None,  # we don't have long descriptions for these
+    "search_term": None,
 })
 
 # Stack both into ONE combined jobs dataframe
@@ -205,7 +208,7 @@ locations_df.to_sql("locations", engine, if_exists="append", index=False)
 skills_df.to_sql("skills", engine, if_exists="append", index=False)
 
 jobs_final = all_jobs[["job_id", "source", "job_title", "company_id", "location_id",
-                       "job_level", "job_type", "first_seen", "link", "description"]]
+                       "job_level", "job_type", "first_seen", "link", "description", "search_term"]]
 jobs_final.to_sql("jobs", engine, if_exists="append", index=False)
 
 job_skills_df.to_sql("job_skills", engine, if_exists="append", index=False)

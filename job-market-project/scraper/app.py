@@ -34,10 +34,11 @@ else:
     db_password = os.getenv("DB_PASSWORD")
 
 engine = create_engine(
-    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
+    f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require",
+    pool_pre_ping=True,
 )
 
-@st.cache_data
+@st.cache_data(ttl=3600)  # refresh from the database every hour, not just on app restart
 def load_jobs():
     return pd.read_sql("""
         SELECT j.job_id, j.source, j.job_title, j.job_level, j.job_type, j.first_seen,
@@ -47,7 +48,7 @@ def load_jobs():
         LEFT JOIN locations l ON j.location_id = l.location_id
     """, engine)
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_skills():
     return pd.read_sql("""
         SELECT j.job_id, j.source, s.skill_name
@@ -59,20 +60,16 @@ def load_skills():
 jobs_df = load_jobs()
 skills_df = load_skills()
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_pk_raw():
-    # Build the path relative to THIS script's location, not the current
-    # working directory -- the working directory can differ between local
-    # runs and Streamlit Cloud's deployment environment, which silently
-    # broke this before.
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(script_dir, "..", "data", "job_history.csv")
-    try:
-        df = pd.read_csv(csv_path)
-        return df.drop_duplicates(subset="link", keep="first")
-    except FileNotFoundError:
-        st.warning(f"job_history.csv not found at {csv_path} — search term/date charts will be empty.")
-        return pd.DataFrame(columns=["search_term", "scraped_date"])
+    # Now reads directly from the database instead of a local CSV file --
+    # this is what makes the dashboard actually reflect new daily scrapes
+    # automatically, since daily_scrape.py writes straight to this database.
+    return pd.read_sql("""
+        SELECT search_term, first_seen AS scraped_date
+        FROM jobs
+        WHERE source = 'pakistan_live'
+    """, engine)
 
 pk_raw_df = load_pk_raw()
 

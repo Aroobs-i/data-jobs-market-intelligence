@@ -78,6 +78,9 @@ ACCENT_COLORS = ["#4fc3f7", "#ff9800", "#66bb6a", "#ef5350", "#ab47bc"]
 
 # --- SIDEBAR FILTERS ---
 st.sidebar.header("🔍 Filters")
+if st.sidebar.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.rerun()
 source_choice = st.sidebar.radio("Data Source", ["All", "Pakistan (live)", "Global (LinkedIn)"])
 source_map = {"All": None, "Pakistan (live)": "pakistan_live", "Global (LinkedIn)": "global_linkedin"}
 selected_source = source_map[source_choice]

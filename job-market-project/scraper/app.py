@@ -222,6 +222,10 @@ with tab3:
                          color="count", color_continuous_scale="Greens", template=PLOTLY_TEMPLATE)
             fig.update_layout(yaxis={"categoryorder": "total ascending"}, height=450)
             st.plotly_chart(fig, use_container_width=True)
+            if selected_source == "pakistan_live":
+                st.caption("Rozee.pk also lists remote/international postings — some entries here "
+                           "(e.g. country names) reflect a hiring company's location, not a job's "
+                           "physical location in Pakistan.")
         else:
             st.info("No city data available for this source.")
 

@@ -102,6 +102,7 @@ This wasn't a smooth, linear build — and the debugging is part of the story:
 - **Messy real-world data**: inconsistent skill capitalization (fixed via most-common-casing normalization), truncated search-result descriptions (fixed by fetching each job's full detail page), a case where the "wait for element" logic broke when reused on a different page type (fixed by making the wait condition a parameter).
 - **Cloud migration**: moved from local PostgreSQL to Neon (serverless Postgres) for public deployment, including handling `sslmode=require`, connection pooling drops (`pool_pre_ping=True`), and Streamlit Cloud's separate secrets system vs local `.env` files.
 - **True automation**: the daily scraper writes directly to the cloud database (not just a local file), with deduplication against existing records, so the live dashboard updates itself with zero manual steps.
+- - **Data provenance nuance**: caught that Rozee.pk lists remote/international postings alongside local Pakistani jobs — some "city" values are actually the hiring company's home country (e.g., "Mexico," "Costa Rica"), not a Pakistan location. Correctly interpreted and labeled in the dashboard rather than treated as a bug or hidden.
 
 ---
 

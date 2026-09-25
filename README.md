@@ -108,7 +108,7 @@ This wasn't a smooth, linear build — and the debugging is part of the story:
 
 ## 📈 Data Sources
 
-- **Pakistan**: live-scraped from [Rozee.pk](https://rozee.pk),( 120 postings and counting as I write this — small on purpose, since it's fresh data updating in real time) refreshed daily via an automated scheduled scraper
+- **Pakistan**: live-scraped from [Rozee.pk](https://rozee.pk),( 134 postings and counting as I write this — small on purpose, since it's fresh data updating in real time) refreshed daily via an automated scheduled scraper
 - **Global**: [1.3M LinkedIn Jobs & Skills (2024)](https://www.kaggle.com/datasets/asaniczka/1-3m-linkedin-jobs-and-skills-2024) (Kaggle), filtered to ~12,900 data/analytics-relevant roles. Predominantly US-based (85%), with UK/Canada/Australia making up the rest — used here as a global benchmark, not a Pakistan-specific source.
 
 ---

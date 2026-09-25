@@ -41,7 +41,7 @@ engine = create_engine(
 @st.cache_data(ttl=3600)  # refresh from the database every hour, not just on app restart
 def load_jobs():
     return pd.read_sql("""
-        SELECT j.job_id, j.source, j.job_title, j.job_level, j.job_type, j.first_seen,
+        SELECT j.job_id, j.source, j.job_title, j.job_level, j.job_type, j.first_seen, j.link,
                c.company_name, l.city, l.country
         FROM jobs j
         LEFT JOIN companies c ON j.company_id = c.company_id

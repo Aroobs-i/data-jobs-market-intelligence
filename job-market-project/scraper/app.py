@@ -254,15 +254,21 @@ st.divider()
 # --- INTERACTIVE DATA EXPLORER (real interactivity: live search + sortable table) ---
 with st.expander("🔎 Explore the raw job data"):
     search_term = st.text_input("Search by job title or company")
-    display_df = filtered_jobs[["job_title", "company_name", "city", "country", "job_level", "job_type"]]
+    display_df = filtered_jobs[["job_title", "company_name", "city", "country",
+                                 "job_level", "job_type", "link"]]
     if search_term:
         mask = (
             display_df["job_title"].str.contains(search_term, case=False, na=False)
             | display_df["company_name"].str.contains(search_term, case=False, na=False)
         )
         display_df = display_df[mask]
-    st.dataframe(display_df, use_container_width=True, hide_index=True, height=350)
-    st.caption(f"Showing {len(display_df):,} of {len(filtered_jobs):,} jobs — click any column header to sort.")
+    st.dataframe(
+        display_df, use_container_width=True, hide_index=True, height=350,
+        column_config={"link": st.column_config.LinkColumn("Posting URL")},
+    )
+    st.caption(f"Showing {len(display_df):,} of {len(filtered_jobs):,} jobs — click any column header to sort. "
+               "Rows with the same title/company but different links are genuinely separate postings "
+               "(e.g. the same role reposted, or opened in multiple cities), not duplicates.")
 
 st.caption("Data sources: live-scraped Rozee.pk postings (auto-updates daily via scheduled scraper) "
            "+ 1.3M-row global LinkedIn dataset (Kaggle)")
